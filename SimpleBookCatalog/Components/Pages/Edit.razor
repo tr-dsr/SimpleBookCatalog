@@ -1,0 +1,68 @@
+﻿@page "/edit/{id:int}"
+@inject IBookRepository Repository
+@inject NavigationManager Navigation
+
+<PageTitle>
+    Edit book
+</PageTitle>
+
+@if(Book is not null)
+{
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <EditForm Enhance="true" method="post" FormName="EditBookForm" OnValidSubmit="EditBook" Model="Book" autocomplete="off">
+                <h3>
+                    Edit book @Id
+                </h3>
+                <input type="hidden" name="Book.Id" value="@Book.Id"/>
+                <div class="mb-3">
+                    <label for="title" class="form-label">
+                        Title
+                    </label>
+                    <InputText id="title" @bind-Value="Book.Title" class="form-control shadow-none"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="author" class="form-label">
+                        Author
+                    </label>
+                    <InputText id="author" @bind-Value="Book.Author" class="form-control shadow-none"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="publication-date" class="form-label">
+                        Date Published
+                    </label>
+                    <InputDate id="publication-date" @bind-Value="Book.PublicationDate" class="form-control shadow-none"></InputDate>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-primary shadow-none">
+                        Submit
+                    </button>
+                </div>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Book? Book { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Book ??= await Repository.GetBookByIdAsync(Id);
+    }
+
+    private async Task EditBook()
+    {
+        if(Book is not null)
+        {
+            await Repository.UpdateAsync(Book);
+            Navigation.NavigateTo("/");
+        }
+    }
+}

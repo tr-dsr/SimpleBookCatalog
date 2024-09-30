@@ -1,0 +1,45 @@
+﻿@page "/"
+@inject IBookRepository Repository
+@attribute [StreamRendering]
+
+<PageTitle>Books List</PageTitle>
+
+<div class="row justify-content-center">
+    <h3 class="row justify-content-center">
+        <b>List of Books</b>
+    </h3>
+    <hr style="width:100%"/>
+    <div class="col-9">
+        @if(books is null)
+        {
+            <div class="book-item">
+                Loading books. Please wait...
+            </div>
+        }
+        else if (books.Any())
+        {
+            @foreach (var book in books)
+            {
+                <div class="book-item">
+                    <BookCard @rendermode="InteractiveServer" Book="book"></BookCard>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="book-item">
+                No Books found.
+            </div>
+        }
+    </div>
+</div>
+
+@code{
+    private List<Book>? books;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(3000);
+        books = await Repository.GetAllBooksList();
+    }
+}

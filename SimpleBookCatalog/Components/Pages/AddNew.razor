@@ -1,0 +1,53 @@
+﻿@page "/add-new"
+@rendermode InteractiveServer
+@inject IBookRepository Repository
+@inject NavigationManager Navigation
+
+<PageTitle>Add New Book</PageTitle>
+
+<div class="row justify-content-center">
+    <div class="col-6">
+        <EditForm Enhance="true" method="post" FormName="AddBookForm" OnValidSubmit="AddBook" Model="Book" autocomplete="off">
+            <h3>
+                <b>Add new book</b>
+            </h3>
+            <div class="mb-3">
+                <label for="title" class="form-label">
+                    Title
+                </label>
+                <InputText id="title" @bind-Value="Book.Title"  class="form-control shadow-none"></InputText>
+            </div>
+            <div class="mb-3">
+                <label for="author" class="form-label">
+                    Author
+                </label>
+                <InputText id="author" @bind-Value="Book.Author" class="form-control shadow-none"></InputText>
+            </div>
+            <div class="mb-3">
+                <label for="publication-date" class="form-label">
+                    Date Published
+                </label>
+                <InputDate id="publication-date" @bind-Value="Book.PublicationDate" class="form-control shadow-none"></InputDate>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-primary shadow-none">
+                    Submit
+                </button>
+            </div>
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+
+    [Microsoft.AspNetCore.Components.SupplyParameterFromForm]
+    public SimpleBookCatalog.Domain.Entities.Book Book { get; set; } = new();
+
+    public async Task AddBook()
+    {
+        await Repository.AddAsync(Book);
+        Navigation.NavigateTo("/");
+    }
+}
